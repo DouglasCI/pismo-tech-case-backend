@@ -95,7 +95,7 @@ func TestCreateTransactionHandler(t *testing.T) {
 			name: "Success - Credit Voucher",
 			payload: Transaction{
 				AccountID:       1,
-				OperationTypeID: CreditVoucher,
+				OperationTypeID: OpCreditVoucher,
 				Amount:          100.0,
 			},
 			expectedStatus: http.StatusCreated,
@@ -104,7 +104,7 @@ func TestCreateTransactionHandler(t *testing.T) {
 			name: "Failure - Negative Purchase",
 			payload: Transaction{
 				AccountID:       1,
-				OperationTypeID: NormalPurchase,
+				OperationTypeID: OpNormalPurchase,
 				Amount:          50.0, // Should be negative
 			},
 			expectedStatus: http.StatusUnprocessableEntity,
@@ -113,7 +113,7 @@ func TestCreateTransactionHandler(t *testing.T) {
 			name: "Failure - Account Does Not Exist",
 			payload: Transaction{
 				AccountID:       999, // FK constraint will trigger
-				OperationTypeID: NormalPurchase,
+				OperationTypeID: OpNormalPurchase,
 				Amount:          -50.0,
 			},
 			expectedStatus: http.StatusInternalServerError,
@@ -138,6 +138,7 @@ func setupTestDB() *sqlx.DB {
 	db, _ := sqlx.Connect("sqlite", ":memory:")
 	db.MustExec("PRAGMA foreign_keys = ON;")
 	db.MustExec(Schema)
+	db.MustExec(OperationTypesSeedQuery)
 	return db
 }
 

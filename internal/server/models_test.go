@@ -49,7 +49,7 @@ func TestValidateTransaction(t *testing.T) {
 			name: "Valid Normal Purchase (Negative Amount)",
 			transaction: Transaction{
 				AccountID:       1,
-				OperationTypeID: NormalPurchase,
+				OperationTypeID: OpNormalPurchase,
 				Amount:          -10.0,
 			},
 			expectedError: nil,
@@ -58,7 +58,7 @@ func TestValidateTransaction(t *testing.T) {
 			name: "Invalid Normal Purchase (Positive Amount)",
 			transaction: Transaction{
 				AccountID:       1,
-				OperationTypeID: NormalPurchase,
+				OperationTypeID: OpNormalPurchase,
 				Amount:          10.0,
 			},
 			expectedError: ErrInvalidNegativeAmount,
@@ -67,7 +67,7 @@ func TestValidateTransaction(t *testing.T) {
 			name: "Valid Purchase With Installments (Negative Amount)",
 			transaction: Transaction{
 				AccountID:       1,
-				OperationTypeID: PurchaseInstallment,
+				OperationTypeID: OpPurchaseInstallment,
 				Amount:          -20.0,
 			},
 			expectedError: nil,
@@ -76,7 +76,7 @@ func TestValidateTransaction(t *testing.T) {
 			name: "Invalid Purchase With Installments (Positive Amount)",
 			transaction: Transaction{
 				AccountID:       1,
-				OperationTypeID: PurchaseInstallment,
+				OperationTypeID: OpPurchaseInstallment,
 				Amount:          20.0,
 			},
 			expectedError: ErrInvalidNegativeAmount,
@@ -85,7 +85,7 @@ func TestValidateTransaction(t *testing.T) {
 			name: "Valid Withdrawal (Negative Amount)",
 			transaction: Transaction{
 				AccountID:       1,
-				OperationTypeID: PurchaseInstallment,
+				OperationTypeID: OpPurchaseInstallment,
 				Amount:          -30.0,
 			},
 			expectedError: nil,
@@ -94,7 +94,7 @@ func TestValidateTransaction(t *testing.T) {
 			name: "Invalid Withdrawal (Positive Amount)",
 			transaction: Transaction{
 				AccountID:       1,
-				OperationTypeID: PurchaseInstallment,
+				OperationTypeID: OpPurchaseInstallment,
 				Amount:          30.0,
 			},
 			expectedError: ErrInvalidNegativeAmount,
@@ -103,7 +103,7 @@ func TestValidateTransaction(t *testing.T) {
 			name: "Valid Credit Voucher (Positive Amount)",
 			transaction: Transaction{
 				AccountID:       1,
-				OperationTypeID: CreditVoucher,
+				OperationTypeID: OpCreditVoucher,
 				Amount:          40.0,
 			},
 			expectedError: nil,
@@ -112,7 +112,7 @@ func TestValidateTransaction(t *testing.T) {
 			name: "Invalid Credit Voucher (Negative Amount)",
 			transaction: Transaction{
 				AccountID:       1,
-				OperationTypeID: CreditVoucher,
+				OperationTypeID: OpCreditVoucher,
 				Amount:          -40.0,
 			},
 			expectedError: ErrInvalidPositiveAmount,
@@ -121,7 +121,7 @@ func TestValidateTransaction(t *testing.T) {
 			name: "Missing Account ID",
 			transaction: Transaction{
 				AccountID:       0,
-				OperationTypeID: Withdrawal,
+				OperationTypeID: OpWithdrawal,
 				Amount:          -10.0,
 			},
 			expectedError: ErrInvalidAccountID,
@@ -130,7 +130,7 @@ func TestValidateTransaction(t *testing.T) {
 			name: "Amount Exactly Zero",
 			transaction: Transaction{
 				AccountID:       1,
-				OperationTypeID: NormalPurchase,
+				OperationTypeID: OpNormalPurchase,
 				Amount:          0.0,
 			},
 			expectedError: ErrZeroAmount,

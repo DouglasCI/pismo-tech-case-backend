@@ -22,10 +22,10 @@ var (
 type OperationType int
 
 const (
-	NormalPurchase      OperationType = iota + 1 // iota starts at 0, so this becomes 1
-	PurchaseInstallment                          // 2
-	Withdrawal                                   // 3
-	CreditVoucher                                // 4
+	OpNormalPurchase      = 1
+	OpPurchaseInstallment = 2
+	OpWithdrawal          = 3
+	OpCreditVoucher       = 4
 )
 
 // Account represents the user account model
@@ -62,11 +62,11 @@ func (t *Transaction) validateFields() error {
 
 func (t *Transaction) validateBusinessRules() error {
 	switch t.OperationTypeID {
-	case NormalPurchase, PurchaseInstallment, Withdrawal:
+	case OpNormalPurchase, OpPurchaseInstallment, OpWithdrawal:
 		if t.Amount > 0 {
 			return ErrInvalidNegativeAmount
 		}
-	case CreditVoucher:
+	case OpCreditVoucher:
 		if t.Amount < 0 {
 			return ErrInvalidPositiveAmount
 		}

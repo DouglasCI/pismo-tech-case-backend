@@ -24,6 +24,7 @@ func main() {
 	// Initialize DB tables with fail fast
 	db.MustExec("PRAGMA foreign_keys = ON;") // Forces SQLite to respect Foreign Key constraints
 	db.MustExec(server.Schema)
+	db.MustExec(server.OperationTypesSeedQuery)
 
 	// Initialize API struct with the DB connection
 	api := &server.API{DB: db}
