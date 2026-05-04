@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     operation_type_id INTEGER NOT NULL,
     amount REAL NOT NULL,
     event_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES accounts(account_id)
+    FOREIGN KEY (account_id) REFERENCES accounts(account_id),
     FOREIGN KEY (operation_type_id) REFERENCES operation_types(operation_type_id)
 );
 `
