@@ -93,7 +93,9 @@ go test ./internal/server -cover
 - Payload:
 
   ```json
-  {"document_number": "12345678900"}
+  {
+    "document_number": "12345678900"
+  }
   ```
 
 - `GET /accounts/{accountId}`: Retrieve account details.
