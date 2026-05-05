@@ -16,6 +16,12 @@ To focus on simplicity, the code was structured in two folders and a flat hierar
   - `handlers.go`: Encapsulates handlers for each endpoint.
   - `schemas.go`: Defines schemas for the database tables.
 
+#### Architectural Decision: Pragmatism vs. Over-engineering
+
+In the context of a scoped microservice with only two core entities (Accounts and Transactions), adopting a rigid Clean Architecture with multiple layers of interfaces, use cases, and repositories would introduce unnecessary boilerplate and violate the Go philosophy of keeping things simple and readable.
+
+The current "flat" structure couples data access directly within the handlers to maximize development speed and code clarity. In a real-world, large-scale production environment where database portability or strict decoupling becomes a necessity, the natural evolutionary step would be to extract the data access layer using the **Repository Pattern** and **Dependency Inversion**. For this challenge, I prioritized a functional, testable, and pragmatic approach over premature abstraction.
+
 ### Database
 
 Uses SQLite with a CGO-free driver (modernc.org/sqlite). This allows the application to be compiled into a static binary without external C dependencies, making the Docker image lightweight.
@@ -93,9 +99,7 @@ go test ./internal/server -cover
 - Payload:
 
   ```json
-  {
-    "document_number": "12345678900"
-  }
+  {"document_number": "12345678900"}
   ```
 
 - `GET /accounts/{accountId}`: Retrieve account details.
