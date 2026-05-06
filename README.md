@@ -8,13 +8,17 @@ A REST API built in Go for managing bank accounts and financial transactions. Th
 
 To focus on simplicity, the code was structured in two folders and a flat hierarchy of files:
 
-- `cmd/api`: Entry point of the application. Handles dependency injection (DB connection) and server startup.
-
-- `internal/server`: The core of the application.
-
-  - `models.go`: Contains models definitions and business rules.
-  - `handlers.go`: Encapsulates handlers for each endpoint.
-  - `schemas.go`: Defines schemas for the database tables.
+```text
+.
+├── cmd/
+│   └── api/                 # Entry point (DB connection and server startup)
+│       └── main.go          
+└── internal/
+    └── server/              # The core of the application
+        ├── handlers.go      # Encapsulates handlers for each HTTP endpoint
+        ├── models.go        # Contains models definitions and validation rules
+        └── schemas.go       # Defines schemas and seed data for the database tables
+```
 
 #### Architectural Decision: Pragmatism vs. Over-engineering
 
