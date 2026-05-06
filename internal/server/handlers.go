@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+
+	"github.com/DouglasCI/pismo-tech-case-backend/internal/domain"
 )
 
 type API struct {
@@ -15,14 +17,14 @@ type API struct {
 }
 
 func (api *API) CreateAccount(w http.ResponseWriter, r *http.Request) {
-	var newAccount Account
+	var newAccount domain.Account
 
 	if err := json.NewDecoder(r.Body).Decode(&newAccount); err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := newAccount.ValidateAccount(); err != nil {
+	if err := newAccount.Validate(); err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
 	}
@@ -47,11 +49,11 @@ func (api *API) GetAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var account Account
+	var account domain.Account
 	query := `SELECT account_id, document_number FROM accounts WHERE account_id = ?`
 	if err := api.DB.Get(&account, query, id); err != nil {
 		if err == sql.ErrNoRows {
-			http.Error(w, "Account not found", http.StatusNotFound)
+			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
 
@@ -65,14 +67,14 @@ func (api *API) GetAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func (api *API) CreateTransaction(w http.ResponseWriter, r *http.Request) {
-	var newTransaction Transaction
+	var newTransaction domain.Transaction
 
 	if err := json.NewDecoder(r.Body).Decode(&newTransaction); err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := newTransaction.ValidateTransaction(); err != nil {
+	if err := newTransaction.Validate(); err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
 	}

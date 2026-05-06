@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,
     account_id INTEGER NOT NULL,
     operation_type_id INTEGER NOT NULL,
-    amount REAL NOT NULL,
+    amount INTEGER NOT NULL,
     event_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (account_id) REFERENCES accounts(account_id),
     FOREIGN KEY (operation_type_id) REFERENCES operation_types(operation_type_id)

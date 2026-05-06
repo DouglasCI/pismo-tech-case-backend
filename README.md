@@ -6,25 +6,30 @@ A REST API built in Go for managing bank accounts and financial transactions. Th
 
 ### Project Structure
 
-To focus on simplicity, the code was structured in two folders and a flat hierarchy of files:
+To balance simplicity with a clear separation of concerns, the project isolates business entities from the HTTP transport layer. This prevents business rules from being tangled with web request parsing.
 
 ```text
 .
 ├── cmd/
-│   └── api/                 # Entry point (DB connection and server startup)
+│   └── api/                 # Entry point (DB connection, wiring, and startup)
 │       └── main.go          
 └── internal/
-    └── server/              # The core of the application
-        ├── handlers.go      # Encapsulates handlers for each HTTP endpoint
-        ├── models.go        # Contains models definitions and validation rules
+    ├── domain/              # Core business logic and entities
+    │   ├── account.go       # Account entity and validation
+    │   ├── money.go         # Custom Money type to handle amount (cents pattern)
+    │   └── transaction.go   # Transaction entity and operation rules
+    └── server/              # HTTP transport and database infrastructure
+        ├── handlers.go      # Encapsulates HTTP handlers and request/response
         └── schemas.go       # Defines schemas and seed data for the database tables
 ```
 
-#### Architectural Decision: Pragmatism vs. Over-engineering
+### Architectural Decision: Pragmatic Separation of Concerns
 
-In the context of a scoped microservice with only two core entities (Accounts and Transactions), adopting a rigid Clean Architecture with multiple layers of interfaces, use cases, and repositories would introduce unnecessary boilerplate and violate the Go philosophy of keeping things simple and readable.
+In the context of a scoped microservice with only two core entities (Accounts and Transactions), adopting a rigid Clean Architecture (with multiple layers of interfaces, services, and repositories) would introduce unnecessary boilerplate and violate the Go philosophy of keeping things simple and readable.
 
-The current "flat" structure couples data access directly within the handlers to maximize development speed and code clarity. In a real-world, large-scale production environment where database portability or strict decoupling becomes a necessity, the next step would be to extract the data access layer using the **Repository Pattern** and **Dependency Inversion**. For this challenge, I prioritized a functional, testable, and pragmatic approach over premature abstraction.
+Instead, I opted for a **pragmatic middle-ground**. The core business rules, validations, and financial precision logic are strictly isolated within the `domain` package, ensuring they remain pure and highly testable. However, to maximize development speed and code clarity, the HTTP transport and data access (SQL queries) remain coupled within the `server` handlers.
+
+In a real-world, large-scale production environment where database portability or strict decoupling becomes a necessity, the natural next step would be to extract the data access layer using the **Repository Pattern** and **Dependency Inversion**. For this challenge, I prioritized a functional approach over premature abstraction.
 
 ### Database
 
@@ -34,7 +39,7 @@ To maximize these benefits, it uses a CGO-free driver (modernc.org/sqlite). This
 
 ### Database Normalization: Operation Types
 
-A architectural decision was to represent operation types as a dedicated database table rather than relying on application-level constants.
+An architectural decision was to represent operation types as a dedicated database table rather than relying on application-level constants.
 
 In a real-world financial system, the rules governing how transactions are classified often change or expand. By moving these to the database, we achieve:
 
@@ -89,13 +94,13 @@ The suite includes unit tests for business rules and integration tests for API h
 ### Run all tests
 
 ```bash
-go test ./internal/server -v
+go test ./internal/... -v
 ```
 
 ### Check coverage percentage
 
 ```bash
-go test ./internal/server -cover
+go test ./internal/... -cover
 ```
 
 ## API Endpoints
@@ -117,7 +122,7 @@ go test ./internal/server -cover
   ```json
   {
     "account_id": 1,
-    "document_number": "123456"
+    "document_number": "12345678900"
   }
   ```
 
@@ -149,12 +154,11 @@ While this project was designed to be simple and fulfill the core requirements o
 
 ### 1. Architectural Evolution (Clean Architecture)
 
-As the business rules grow, the current flat architecture should be refactored to a **Layered/Clean Architecture** (Domain, Service, Repository, Delivery). This would decouple the HTTP transport layer and the database driver from the business logic, heavily utilizing Dependency Inversion to make the system easier to test and maintain.
+As the business rules grow, the current architecture should be refactored to a **Layered/Clean Architecture** (Domain, Service, Repository, Delivery). This would decouple the HTTP transport layer and the database driver from the business logic, heavily utilizing Dependency Inversion to make the system easier to test and maintain.
 
 ### 2. Database Migration & Containerization
 
-- **PostgreSQL:** Migrate from SQLite to a robust, highly concurrent relational database like PostgreSQL.
-- **Docker:** Add a `Dockerfile` and `docker-compose.yml` to containerize the application and the database, ensuring parity between development and production environments.
+- **PostgreSQL:** Migrate from SQLite to a robust relational database like PostgreSQL.
 - **Migration Tool:** Introduce a formal migration tool (like `golang-migrate`) instead of running raw schema queries on startup.
 
 ### 3. Testing Strategy
@@ -169,3 +173,7 @@ As the business rules grow, the current flat architecture should be refactored t
 ### 5. API Documentation
 
 - Implement **Swagger/OpenAPI 3.0** specifications to automatically generate interactive documentation for the endpoints and payloads.
+
+### 6. Evolving the Money Domain
+
+- **Financial Operations (Value Object):** Expand the custom `Money` type into a fully-featured DDD Value Object. This includes implementing safe mathematical methods (e.g., `Add()`, `Subtract()`, `Percentage()`) directly on the type. This ensures financial calculations are encapsulated, preventing integer overflows and logic duplication across the system.

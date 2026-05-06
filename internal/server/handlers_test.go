@@ -9,6 +9,8 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "modernc.org/sqlite"
+
+	"github.com/DouglasCI/pismo-tech-case-backend/internal/domain"
 )
 
 func TestCreateAccountHandler(t *testing.T) {
@@ -25,7 +27,7 @@ func TestCreateAccountHandler(t *testing.T) {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusCreated)
 	}
 
-	var response Account
+	var response domain.Account
 	json.NewDecoder(rr.Body).Decode(&response)
 	if response.DocumentNumber != "123456789" {
 		t.Errorf("handler returned unexpected body: got %v", response.DocumentNumber)
@@ -62,7 +64,7 @@ func TestGetAccountHandler(t *testing.T) {
 			t.Errorf("expected status 200, got %d", rr.Code)
 		}
 
-		var acc Account
+		var acc domain.Account
 		json.NewDecoder(rr.Body).Decode(&acc)
 		if acc.DocumentNumber != "12345" {
 			t.Errorf("expected document 12345, got %s", acc.DocumentNumber)
@@ -88,32 +90,32 @@ func TestCreateTransactionHandler(t *testing.T) {
 
 	tests := []struct {
 		name           string
-		payload        Transaction
+		payload        domain.Transaction
 		expectedStatus int
 	}{
 		{
 			name: "Success - Credit Voucher",
-			payload: Transaction{
+			payload: domain.Transaction{
 				AccountID:       1,
-				OperationTypeID: OpCreditVoucher,
+				OperationTypeID: domain.OpCreditVoucher,
 				Amount:          100.0,
 			},
 			expectedStatus: http.StatusCreated,
 		},
 		{
 			name: "Failure - Negative Purchase",
-			payload: Transaction{
+			payload: domain.Transaction{
 				AccountID:       1,
-				OperationTypeID: OpNormalPurchase,
+				OperationTypeID: domain.OpNormalPurchase,
 				Amount:          50.0, // Should be negative
 			},
 			expectedStatus: http.StatusUnprocessableEntity,
 		},
 		{
 			name: "Failure - Account Does Not Exist",
-			payload: Transaction{
+			payload: domain.Transaction{
 				AccountID:       999, // FK constraint will trigger
-				OperationTypeID: OpNormalPurchase,
+				OperationTypeID: domain.OpNormalPurchase,
 				Amount:          -50.0,
 			},
 			expectedStatus: http.StatusInternalServerError,
