@@ -20,12 +20,13 @@ To focus on simplicity, the code was structured in two folders and a flat hierar
 
 In the context of a scoped microservice with only two core entities (Accounts and Transactions), adopting a rigid Clean Architecture with multiple layers of interfaces, use cases, and repositories would introduce unnecessary boilerplate and violate the Go philosophy of keeping things simple and readable.
 
-The current "flat" structure couples data access directly within the handlers to maximize development speed and code clarity. In a real-world, large-scale production environment where database portability or strict decoupling becomes a necessity, the natural evolutionary step would be to extract the data access layer using the **Repository Pattern** and **Dependency Inversion**. For this challenge, I prioritized a functional, testable, and pragmatic approach over premature abstraction.
+The current "flat" structure couples data access directly within the handlers to maximize development speed and code clarity. In a real-world, large-scale production environment where database portability or strict decoupling becomes a necessity, the next step would be to extract the data access layer using the **Repository Pattern** and **Dependency Inversion**. For this challenge, I prioritized a functional, testable, and pragmatic approach over premature abstraction.
 
 ### Database
 
-Uses SQLite with a CGO-free driver (modernc.org/sqlite). This allows the application to be compiled into a static binary without external C dependencies, making the Docker image lightweight.
-Also used the `sqlx` library for clean, readable database interactions.
+SQLite was chosen for this project because it is exceptionally lightweight and easy to deploy, making it the ideal database for when simplicity and portability are priorities.
+
+To maximize these benefits, it uses a CGO-free driver (modernc.org/sqlite). This allows the application to be compiled into a static binary without external C dependencies, ensuring the final Docker image remains as small as possible. Additionally, the `sqlx` library is used to keep database interactions clean and highly readable.
 
 ### Database Normalization: Operation Types
 
@@ -74,6 +75,8 @@ The server will be available at <http://localhost:8080>.
 go mod tidy
 go run ./cmd/api
 ```
+
+The server will be available at <http://localhost:8080>.
 
 ## Testing & Coverage
 
