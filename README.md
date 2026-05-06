@@ -142,3 +142,30 @@ go test ./internal/server -cover
   | 2  | PURCHASE WITH INSTALLMENTS | Negative (-) |
   | 3  | WITHDRAWAL                 | Negative (-) |
   | 4  | CREDIT VOUCHER             | Positive (+) |
+
+## Next Steps & Future Improvements
+
+While this project was designed to be simple and fulfill the core requirements of the challenge, a production-ready evolution of this microservice would include the following improvements:
+
+### 1. Architectural Evolution (Clean Architecture)
+
+As the business rules grow, the current flat architecture should be refactored to a **Layered/Clean Architecture** (Domain, Service, Repository, Delivery). This would decouple the HTTP transport layer and the database driver from the business logic, heavily utilizing Dependency Inversion to make the system easier to test and maintain.
+
+### 2. Database Migration & Containerization
+
+- **PostgreSQL:** Migrate from SQLite to a robust, highly concurrent relational database like PostgreSQL.
+- **Docker:** Add a `Dockerfile` and `docker-compose.yml` to containerize the application and the database, ensuring parity between development and production environments.
+- **Migration Tool:** Introduce a formal migration tool (like `golang-migrate`) instead of running raw schema queries on startup.
+
+### 3. Testing Strategy
+
+- Add more robust **Integration Tests** for the HTTP handlers and database queries focusing on error handling.
+
+### 4. Resiliency
+
+- **Idempotency:** Implement idempotency keys for the `POST /transactions` endpoint to prevent double-spending or duplicate transactions in case of network retries.
+- **Structured Logging & Observability:** Replace standard library logs with structured JSON logging (e.g., `slog` or `zap`) and add correlation IDs to trace requests across the system.
+
+### 5. API Documentation
+
+- Implement **Swagger/OpenAPI 3.0** specifications to automatically generate interactive documentation for the endpoints and payloads.
